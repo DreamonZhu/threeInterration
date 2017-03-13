@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <style>
+        	select { width: 200px; }
+        </style>
+        <script src="../../jQ/day1/demo01/jquery-1.11.1.min.js"></script>
+        <script>
+            /*
+             * @param1 id：或去远足的id
+             * @param2 code：省或市的编码
+             * @param3 flag：表示省或市或区，其中1代表省，2表示市，3表示区
+             */
+            function callback(id,code,flag){
+                $.ajax({
+                    url : 'data.php',
+                    type : 'get',
+                    dataType : 'jsonp',
+                    data : {citycode:code,flag:flag},
+                    success : function(data){
+                        $.each(data,function(i,element){
+                            var options = $('<option></option>').attr('value',element.code).append(element.name);
+                            $('#' + id).append(options);
+                        })
+                    },
+                    error : function(){
+                        alert('亲，出错了哦...');
+                    }
+                 })
+            }
+        	$(function(){
+                //  定义省份取值函数
+                var province = function(pCode){
+                    callback('province',pCode,1);
+                }
+                //  定义城市取值函数
+                var city = function(cCode){
+                    callback('city',cCode,2);
+                }
+                //  定义区域取值函数
+                var town = function(tCode){
+                    callback('town',tCode,3);
+                }
+
+                // 初始化
+                province(0);
+                city('110000');
+                town('110100');
+                // 绑定值改变事件
+                function changeValue(id,relatedId,flag){
+                    $('#' + id).change(function(){
+                        $('#' + relatedId).html('');
+                        var code = $(this).val();
+                        callback(relatedId,code,flag)
+                    })
+                }
+                // province
+                /*$('#province').change(function(){
+                    $('#city').html('');
+                    var code = $(this).val();
+                    callback('city',code,2);
+                })*/
+                changeValue('province','city',2);
+                changeValue('city','town',3);
+                //  city
+                
+        	})
+        </script>
+    </head>
+    <body>
+    	<select id="province"></select>
+    	<select id="city"></select>
+    	<select id="town"></select>
+    </body>
+</html>
